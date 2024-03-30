@@ -2,3 +2,4 @@ pandas
 requests
 playwright
 pyyaml
+beautifulsoup4

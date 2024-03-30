@@ -2,9 +2,11 @@ import os
 import typing
 import json
 import time
+import pandas as pd
 from enum import IntEnum
 from playwright.sync_api import sync_playwright, Page
 from pathlib import Path
+from case_page_parser import parseHearingInfo
 
 
 __all__ = ['Scraper']
@@ -72,8 +74,8 @@ class Scraper(object):
         html = page.content()
         return self._parse_page(html)
 
-    def _parse_page(self, html: str) -> dict:
-        return {}
+    def _parse_page(self, html: str) -> typing.Tuple[dict, pd.DataFrame]:
+        return parseHearingInfo(html)
 
     def _page_states(self, page: Page) -> typing.List['PageState']:
         page.wait_for_load_state('load')
@@ -100,5 +102,7 @@ class PageState(IntEnum):
 
 if __name__ == '__main__':
     with Scraper() as scraper:
-        result = scraper.get_case_details("G64805")
+        result, df = scraper.get_case_details("G64805")
         Path('output.json').write_text(json.dumps(result, indent=2))
+        df.to_csv('output.csv', index=False)
+        print("debug me ")
