@@ -13,6 +13,7 @@ class ScrapeFlow(object):
         google_credentials = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         google_sheet_name = os.getenv('GOOGLE_SHEET_NAME')
 
+        self.max_cases = int(os.getenv('MAX_CASES', 10))
         self.sheet_exporter = GoogleSheetsCSVConverter(google_credentials, google_sheet_name)
         self.pipeline = HearingScraperPipeline()
         self.case_scraper = CaseScraper()
@@ -43,18 +44,20 @@ class ScrapeFlow(object):
         cdcr_numbers = self.results['CDC#'].unique()
         past_actions = []
         cases_details = []
+
         for i, cdcr_number in enumerate(cdcr_numbers):
             print(f"Scraping case details for {i} / {len(cdcr_numbers)}")
             case_details, case_past_actions = self.case_scraper.get_case_details(cdcr_number)
             past_actions.append(case_past_actions)
             cases_details.append(case_details)
 
-            if i > 10:
+            if i > self.max_cases:
                 break
 
         print("Finish scraping cases details")
         self.past_actions = pd.concat(past_actions, ignore_index=True)
         self.results = pd.merge(self.results, pd.DataFrame(cases_details), how='left', on='CDC#')
+
     def dump_to_csv(self):
         if isinstance(self.results, pd.DataFrame):
             self.results.to_csv('app/csvData/results.csv')
@@ -74,7 +77,6 @@ class ScrapeFlow(object):
         csv_files = ['app/csvData/results.csv', 'app/csvData/past_actions.csv']
         self.sheet_exporter.convert_csvs_to_sheets(csv_files)
         print("Publishing results to google sheet")
-        pass
 
 
 def main():
