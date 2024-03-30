@@ -9,14 +9,14 @@ from pathlib import Path
 from case_page_parser import parseHearingInfo
 
 
-__all__ = ['Scraper']
+__all__ = ['CaseScraper']
 
 
 data_dir = Path(__file__).parent.parent / 'data' / 'playwrite'
 os.makedirs(data_dir, exist_ok=True)
 
 
-class Scraper(object):
+class CaseScraper(object):
 
     def __init__(self):
         self.playwright = sync_playwright()
