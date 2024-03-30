@@ -37,22 +37,20 @@ class HearingScraperPipeline:
         scheduleData = pd.DataFrame()
 
         for url in urlDict:
+            print(urlDict[url])
             tempData = self.data_scrapper.getData(urlDict[url])
 
             tempData2 = tempData
             tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
             min_date = tempData2['SCHEDULED DATE'].min()
-            if min_date > least_date:
+            if min_date < least_date:
                 break
 
             scheduleData = pd.concat([scheduleData, tempData], ignore_index=True)
+            scheduleDataColumns = self.data_scrapper.get_schedule_columns()
+            scheduleData = scheduleData[scheduleDataColumns]
 
-            tempData['SCHEDULED DATE'] = pd.to_datetime(tempData['SCHEDULED DATE'])
-            min_date = tempData['SCHEDULED DATE'].min()
-
-        scheduleDataColumns = self.data_scrapper.get_schedule_columns()
-        scheduleData = scheduleData[scheduleDataColumns]
-
+        print(len(scheduleData))
 
         # get result 
         urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
@@ -65,15 +63,15 @@ class HearingScraperPipeline:
 
             tempData2 = tempData
             tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
-            min_date = tempData2['SCHEDULED DATE'].min()
-            if min_date > least_date:
+            max_date = tempData2['SCHEDULED DATE'].max()
+            if max_date > least_date:
                 break
 
             resultData = pd.concat([resultData, tempData], ignore_index=True)
+            resultDataColumns = self.data_scrapper.get_result_columns()
+            resultData = resultData[resultDataColumns]
 
-        resultDataColumns = self.data_scrapper.get_result_columns()
-        resultData = resultData[resultDataColumns]
-
+        print(resultData)
 
         #  merge result
         merge_columns = ['CDC#', 'SCHEDULED DATE']
