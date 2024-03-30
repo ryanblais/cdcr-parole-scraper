@@ -54,11 +54,6 @@ class GoogleSheetsCSVConverter:
 # Usage example
 if __name__ == "__main__":
     # Initialize the converter
-    converter = GoogleSheetsCSVConverter('credentials/my_credentials.json', 'cdcr-parole-googleSheet')
+    converter = GoogleSheetsCSVConverter('../credentials/my_credentials.json', 'cdcr-parole-googleSheet')
     
-    # Load the credentials
-    converter.load_credentials()
-    
-    # Convert the CSV files and append their contents to separate sheets
-    csv_files = ['csvData/inputCsv1.csv', 'csvData/inputCsv2.csv']
-    converter.convert_csvs_to_sheets(csv_files)
+  

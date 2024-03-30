@@ -3,11 +3,13 @@ import pandas as pd
 from .hearing_scraper import HearingScraperPipeline
 from .case_scraper import CaseScraper
 from .sheet_exporter import GoogleSheetsCSVConverter
-
+from dotenv import load_dotenv
 
 class ScrapeFlow(object):
 
     def __init__(self, parallel=1):
+        # Load the .env file
+        load_dotenv()
         google_credentials = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         google_sheet_name = os.getenv('GOOGLE_SHEET_NAME')
 
@@ -28,6 +30,7 @@ class ScrapeFlow(object):
         print("Start scraping hearing schedule")
         self.results = self.pipeline.get_latest_data()
         self.populate_cases()
+        self.dump_to_csv()
         self.publish_speardsheet()
         print("Finish scraping hearing schedule")
 
@@ -54,16 +57,22 @@ class ScrapeFlow(object):
         self.results = pd.merge(self.results, pd.DataFrame(cases_details), how='left', on='CDC#')
     def dump_to_csv(self):
         if isinstance(self.results, pd.DataFrame):
-            self.results.to_csv('results.csv')
+            self.results.to_csv('app/csvData/results.csv')
 
         if isinstance(self.past_actions, pd.DataFrame):
-            self.past_actions.to_csv('past_actions.csv')
+            self.past_actions.to_csv('app/csvData/past_actions.csv')
 
     def publish_speardsheet(self):
         """
         Publish the results to a google sheet
         :return:
         """
+        # Load the credentials
+        self.sheet_exporter.load_credentials()
+    
+        # Convert the CSV files and append their contents to separate sheets
+        csv_files = ['app/csvData/results.csv', 'app/csvData/past_actions.csv']
+        self.sheet_exporter.convert_csvs_to_sheets(csv_files)
         print("Publishing results to google sheet")
         pass
 
