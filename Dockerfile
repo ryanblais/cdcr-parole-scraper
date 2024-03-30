@@ -3,10 +3,12 @@
 FROM public.ecr.aws/lambda/python:3.11
 
 # Set the working directory in the container
-WORKDIR /app
+# WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY . /app
+COPY ./app ${LAMBDA_TASK_ROOT}
+
+COPY ./requirements.txt ${LAMBDA_TASK_ROOT}
 
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
@@ -15,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip freeze > installed_packages.txt
 
 # Make port 80 available to the world outside this container
-EXPOSE 80
+# EXPOSE 80
 
 # Run your application
-CMD ["python", "app/main.py"]
+CMD ["main.main"]
