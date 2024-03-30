@@ -7,8 +7,10 @@ FROM mcr.microsoft.com/playwright:v1.42.1-jammy
 RUN apt-get update
 RUN apt-get install -y python3-pip
 
-# Copy the current directory contents into the container at /app
-#COPY ./app ${LAMBDA_TASK_ROOT}
+#ARG FUNCTION_DIR="/function"
+#RUN mkdir -p ${FUNCTION_DIR}
+
+RUN pip3 install awslambdaric
 
 #COPY ./requirements.txt ${LAMBDA_TASK_ROOT}
 COPY ./requirements.txt .
@@ -19,5 +21,13 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY ./app .
 COPY ./scrapper.yaml .
 
+# Add Lambda Runtime Interface Emulator
+# see https://docs.aws.amazon.com/lambda/latest/dg/images-test.html
+COPY ./entry_script.sh /entry_script.sh
+RUN chmod +x /entry_script.sh
+ADD aws-lambda-rie /usr/local/bin/aws-lambda-rie
+
+ENTRYPOINT [ "/entry_script.sh","main.lambda_handler" ]
+
 # Run your application
-CMD ["python3", "main.py"]
+#CMD ["main.lambda_handler"]
