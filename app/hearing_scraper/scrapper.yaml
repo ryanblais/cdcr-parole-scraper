@@ -1,8 +1,11 @@
 {
         "hearing-schedules": {
-                "url": "https://www.cdcr.ca.gov/bph/hearing-schedule/"
+                "url": "https://www.cdcr.ca.gov/bph/hearing-schedule/",
+                "h3_id": "select-a-schedule",
+                "h3_string": "Select a schedule:"
         },
         "hearing-results": {
-                "url": "https://www.cdcr.ca.gov/bph/parole-suitability-hearing-results/"
+                "url": "https://www.cdcr.ca.gov/bph/parole-suitability-hearing-results/",
+                "h3_string": "Hearing Results by Month:"
         }
 }
