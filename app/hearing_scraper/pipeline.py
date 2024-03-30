@@ -26,8 +26,7 @@ class HearingScraperPipeline:
         :return: pd.DataFrame
         """
         # 2
-        urlDict = self.data_scrapper.get_monthly_urls_for_hearing_schedules()
-        print(urlDict)
+        urlDict = self.data_scrapper.get_current_and_next_month_url_for_hearing_schedules()
         for url in urlDict:
             tempData = self.data_scrapper.getData(urlDict[url])
             if self.data.empty:
