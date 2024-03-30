@@ -37,7 +37,6 @@ class HearingScraperPipeline:
         scheduleData = pd.DataFrame()
 
         for url in urlDict:
-            print(urlDict[url])
             tempData = self.data_scrapper.getData(urlDict[url])
 
             tempData2 = tempData
@@ -49,8 +48,6 @@ class HearingScraperPipeline:
             scheduleData = pd.concat([scheduleData, tempData], ignore_index=True)
             scheduleDataColumns = self.data_scrapper.get_schedule_columns()
             scheduleData = scheduleData[scheduleDataColumns]
-
-        print(len(scheduleData))
 
         # get result 
         urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
@@ -80,8 +77,6 @@ class HearingScraperPipeline:
                 resultData.rename(columns={col: col + '(RESULT TABLE)'}, inplace=True)
 
         merged_data = pd.merge(scheduleData, resultData, on=merge_columns, how='outer')
-        print(merged_data.columns)
-        print(merged_data)
         self.data = merged_data
         return self.data
 
