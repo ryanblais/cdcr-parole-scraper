@@ -2,6 +2,7 @@
 
 import pandas as pd
 from .main import SR_SCRAPER
+from datetime import datetime
 
 
 class HearingScraperPipeline:
@@ -26,18 +27,65 @@ class HearingScraperPipeline:
         :return: pd.DataFrame
         """
         # 2
+        lastFetchedDate = self.data_scrapper.get_last_fetched_date()
+        # Extract month and year
+        least_date = datetime.strptime(lastFetchedDate, '%Y-%m-%d')
+
+
+        # get schedule
         urlDict = self.data_scrapper.get_monthly_urls_for_hearing_schedules()
-        print(urlDict)
+        scheduleData = pd.DataFrame()
+
         for url in urlDict:
             tempData = self.data_scrapper.getData(urlDict[url])
-            if self.data.empty:
-                self.data = tempData
-            else:
-                self.data = pd.concat([self.data, tempData], ignore_index=True).reset_index(drop=True)
-            print(self.data.shape)
-        
-        urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
 
+            tempData2 = tempData
+            tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
+            min_date = tempData2['SCHEDULED DATE'].min()
+            if min_date > least_date:
+                break
+
+            scheduleData = pd.concat([scheduleData, tempData], ignore_index=True)
+
+            tempData['SCHEDULED DATE'] = pd.to_datetime(tempData['SCHEDULED DATE'])
+            min_date = tempData['SCHEDULED DATE'].min()
+
+        scheduleDataColumns = self.data_scrapper.get_schedule_columns()
+        scheduleData = scheduleData[scheduleDataColumns]
+
+
+        # get result 
+        urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
+        urlDict2 = self.data_scrapper.get_weekly_urls_for_hearing_results()
+        for d in urlDict2:
+            urlDict[d] = urlDict2[d]
+        resultData = pd.DataFrame()
+        for url in urlDict:
+            tempData = self.data_scrapper.getData(urlDict[url])
+
+            tempData2 = tempData
+            tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
+            min_date = tempData2['SCHEDULED DATE'].min()
+            if min_date > least_date:
+                break
+
+            resultData = pd.concat([resultData, tempData], ignore_index=True)
+
+        resultDataColumns = self.data_scrapper.get_result_columns()
+        resultData = resultData[resultDataColumns]
+
+
+        #  merge result
+        merge_columns = ['CDC#', 'SCHEDULED DATE']
+        for col in scheduleData.columns:
+            if col in resultData.columns and col not in merge_columns:
+                scheduleData.rename(columns={col: col + '(SCHEDULE TABLE)'}, inplace=True)
+                resultData.rename(columns={col: col + '(RESULT TABLE)'}, inplace=True)
+
+        merged_data = pd.merge(scheduleData, resultData, on=merge_columns, how='outer')
+        print(merged_data.columns)
+        print(merged_data)
+        self.data = merged_data
         return self.data
 
 
