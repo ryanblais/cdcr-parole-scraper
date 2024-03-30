@@ -7,6 +7,7 @@ Author: Nikola Huang
 """
 from typing import List
 from pandas import DataFrame
+from datetime import date
 
 from bs4 import BeautifulSoup
 
@@ -26,13 +27,22 @@ def getBasicInfo(soup: BeautifulSoup, interestedProperties: set) -> dict:
         # Filter out empty divs.
         propertyAndValue = filterOutEmptyStrings(propertyAndValue)
         if len(propertyAndValue) >= 2 and propertyAndValue[0] in interestedProperties:
-            # Example: basicInfo['Age'] = 39
-            basicInfo[propertyAndValue[0]] = propertyAndValue[1]
+            propertyName = propertyAndValue[0]
+            value = propertyAndValue[1]
+            if propertyName == 'Name':
+                [last, first] = value.split(',')
+                basicInfo["Last Name"] = last.strip()
+                basicInfo["First + Middle Name"] = first.strip()
+            else:
+                if propertyName == 'CDCR Number':
+                    propertyName = 'CDC#'
+                # Example: basicInfo['Age'] = 39
+                basicInfo[propertyName] = value
 
     return basicInfo
 
 
-def getHearingActions(soup: BeautifulSoup, name: str, CDCR: str) -> DataFrame:
+def getHearingActions(soup: BeautifulSoup, lastName: str, firstName: str, CDCR: str) -> DataFrame:
     """
     Collect the hearing action data and store it into a DataFrame
     Assumption: Hearing action is the only <table> in this page.
@@ -42,13 +52,13 @@ def getHearingActions(soup: BeautifulSoup, name: str, CDCR: str) -> DataFrame:
         allCells = tr.find_all('td')
         if not allCells or not allCells[0]:
             continue
-        row = [name, CDCR]
+        row = [lastName, firstName, CDCR]
         for cell in allCells:
             row.append(cell.text.strip())
         listOfList.append(row)
 
     hearingTable = DataFrame(listOfList)
-    hearingTable.columns = ['Name', 'CDCR Number', 'Date', 'Action', 'Status', 'Outcome']
+    hearingTable.columns = ['Last Name', 'First + Middle Name', 'CDC#', 'Date', 'Action', 'Status', 'Outcome']
     return hearingTable
 
 
@@ -59,9 +69,10 @@ def parseHearingInfo(html: str) -> (dict, DataFrame):
     soup = BeautifulSoup(html, 'html.parser')
     basicInfo = getBasicInfo(
         soup,
-        {'Name', 'CDCR Number', 'Age', 'Current Location', 'Admission Date', 'Commitment County',
-         'Parole Eligible Date'}
+        {'Name', 'CDCR Number', 'Age', 'Admission Date', 'Parole Eligible Date'}
     )
 
-    hearingActions = getHearingActions(soup, basicInfo['Name'], basicInfo['CDCR Number'])
+    hearingActions = getHearingActions(soup, basicInfo['Last Name'], basicInfo['First + Middle Name'], basicInfo['CDC#'])
+    basicInfo['Past Hearing Actions # (Count)'] = len(hearingActions) - 1
+    basicInfo['Date of CIRIS pull'] = date.today().strftime("%m/%d/%y")
     return basicInfo, hearingActions
