@@ -36,6 +36,12 @@ This is a Python project that uses a virtual environment (venv) for dependency m
     pip install -r requirements.txt
     ```
 
+5. Install playwright:
+    ```
+    playwright install
+    ```
+
+
 ## Running the Application
 
 After setting up the project and activating the virtual environment, you can run the application with the following command:
