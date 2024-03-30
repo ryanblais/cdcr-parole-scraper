@@ -1,5 +1,6 @@
 import yaml
 from .html_parser import *
+from datetime import datetime
 from enum import Enum
 from urllib.request import urlopen
 from ssl import SSLError, CertificateError
@@ -32,6 +33,9 @@ class SR_SCRAPER:
         header = []
         header = soup.find_all('th')
         header = [h.text.strip() for h in header]
+        if(len(header) == 0):
+            header = soup.find_all('tr')[0]
+            header = [h.text.strip() for h in header]
 
         data = []
         for row in table_rows:
@@ -58,6 +62,27 @@ class SR_SCRAPER:
 
     def get_property(self, domain, property_name):
         return self.get_property_value(domain, property_name)
+    
+    def update_last_fetched_date(self):
+        with open(property_file_path, 'r') as file:
+            existing_data = yaml.safe_load(file)
+
+        # Update the existing data with the current date
+        existing_data['date'] = datetime.now().strftime('%Y-%m-%d')
+
+        # Write updated data to YAML file
+        with open(property_file_path, 'w') as file:
+            yaml.dump(existing_data, file)
+        
+    def get_schedule_columns(self):
+        return self.get_property_value(URLType.HEARING_SCHEDULE, "columns")
+    
+    def get_result_columns(self):
+        return self.get_property_value(URLType.HEARING_RESULTS, "columns")
+    
+    def get_last_fetched_date(self):
+        return self.get_property_value(URLType.HEARING_SCHEDULE, "last-fetched-date")
+
 
     def get_hearing_schedule_base_url(self):
         return self.get_property_value(URLType.HEARING_SCHEDULE, "url")

@@ -3,12 +3,13 @@
                 "url": "https://www.cdcr.ca.gov/bph/hearing-schedule/",
                 "h3_id_month": "select-a-schedule",
                 "h3_string_month": "Select a schedule:",
-                "columns": ['CDC#','HEARING TYPE', 'PANEL', 'HEARING LOCATION', 'HEARING METHOD', 'SCHEDULED DATE', 'HEARING TIME']
+                "columns": ['CDC#','HEARING TYPE', 'PANEL', 'HEARING LOCATION', 'HEARING METHOD', 'SCHEDULED DATE', 'HEARING TIME'],
+                "last-fetched-date" : "2024-01-01"
         },
         "hearing-results": {
                 "url": "https://www.cdcr.ca.gov/bph/parole-suitability-hearing-results/",
                 "h3_id_week": "hearing-results-by-week",
                 "h3_string_month": "Hearing Results by Month:",
-                "columns": ['CDC#', 'SCHEDULED DATE', 'HEARING TIME', 'OFFENDER NAME', 'HEARING METHOD', 'COUNTY OF COMMITMENT', 'GOV CODE', 'HEARING TYPE', 'RESULT']
+                "columns": ['CDC#', 'SCHEDULED DATE', 'OFFENDER NAME', 'COUNTY OF COMMITMENT', 'GOV CODE', 'HEARING TYPE', 'RESULT']
         }
 }
