@@ -53,7 +53,6 @@ class HTMLParser:
         return outgoing_links
 
     def get_schedule_links_following_header_string(self, **kwargs):
-        print(kwargs)
         if "id" in kwargs and kwargs['id'] is not None:
             # Find the <h3> tag with given id
             select_schedule_heading = self.soup_obj.find('h3', id=kwargs['id'])
