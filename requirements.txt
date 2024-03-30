@@ -4,3 +4,6 @@ playwright
 pyyaml
 beautifulsoup4
 lxml
+google-api-python-client
+gspread
+oauth2client

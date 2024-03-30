@@ -3,6 +3,7 @@
 import pandas as pd
 from .main import SR_SCRAPER
 
+
 class HearingScraperPipeline:
     data = None
     data_scrapper = None
@@ -29,7 +30,10 @@ class HearingScraperPipeline:
         print(urlDict)
         for url in urlDict:
             tempData = self.data_scrapper.getData(urlDict[url])
-            self.data = self.data.append(tempData, ignore_index=True)
+            if self.data.empty:
+                self.data = tempData
+            else:
+                self.data = pd.concat([self.data, tempData], ignore_index=True).reset_index(drop=True)
             print(self.data.shape)
         
         urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
@@ -66,7 +70,7 @@ class DummyData:
 
 
 
-HearingScraperPipeline().get_latest_data()
+# HearingScraperPipeline().get_latest_data()
 
 
 

@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 from .hearing_scraper import HearingScraperPipeline
-from case_scraper import CaseScraper
-from sheet_exporter import GoogleSheetsCSVConverter
+from .case_scraper import CaseScraper
+from .sheet_exporter import GoogleSheetsCSVConverter
 
 
 class ScrapeFlow(object):
@@ -34,6 +34,7 @@ class ScrapeFlow(object):
         For each case in the results, get the case details, update results and past_actions
         :return:
         """
+
         pass
 
     def publish_speardsheet(self):

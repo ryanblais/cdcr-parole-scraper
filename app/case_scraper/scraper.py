@@ -6,7 +6,7 @@ import pandas as pd
 from enum import IntEnum
 from playwright.sync_api import sync_playwright, Page
 from pathlib import Path
-from case_page_parser import parseHearingInfo
+from .case_page_parser import parseHearingInfo
 
 
 __all__ = ['CaseScraper']
@@ -28,7 +28,7 @@ class CaseScraper(object):
         self.browser = self.context.chromium.launch_persistent_context(
             user_data_dir=data_dir,
             java_script_enabled=True,
-            headless=False
+            headless=True
         )
         return self
 
