@@ -1,6 +1,7 @@
 import requests
-from bs4 import BeautifulSoup
 import pandas as pd
+from bs4 import BeautifulSoup
+
 
 def getData(url):
     base_url = url
@@ -24,7 +25,8 @@ def getData(url):
     df = pd.DataFrame(data, columns=header)
     return df
 
+
 # gets the  table data in pandas datframe from the url
-# url = "https://www.cdcr.ca.gov/bph/2024/03/20/hearing-results-february-2024/"
-# data = getData(url)
-# print(data)
+url = "https://www.cdcr.ca.gov/bph/2024/03/20/hearing-results-february-2024/"
+data = getData(url)
+print(data)
