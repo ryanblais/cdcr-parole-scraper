@@ -4,7 +4,7 @@
                 "h3_id_month": "select-a-schedule",
                 "h3_string_month": "Select a schedule:",
                 "columns": ['CDC#','HEARING TYPE', 'PANEL', 'HEARING LOCATION', 'HEARING METHOD', 'SCHEDULED DATE', 'HEARING TIME'],
-                "last-fetched-date" : "2024-01-01"
+                "last-fetched-date" : "2024-03-01"
         },
         "hearing-results": {
                 "url": "https://www.cdcr.ca.gov/bph/parole-suitability-hearing-results/",

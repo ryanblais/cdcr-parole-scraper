@@ -29,10 +29,7 @@ class HearingScraperPipeline:
         # 2
         lastFetchedDate = self.data_scrapper.get_last_fetched_date()
         # Extract month and year
-        date = datetime.strptime(lastFetchedDate, '%Y-%m-%d')
-        month = date.month
-        year = date.year
-        print(month, year)
+        least_date = datetime.strptime(lastFetchedDate, '%Y-%m-%d')
 
 
         # get schedule
@@ -41,6 +38,13 @@ class HearingScraperPipeline:
 
         for url in urlDict:
             tempData = self.data_scrapper.getData(urlDict[url])
+
+            tempData2 = tempData
+            tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
+            min_date = tempData2['SCHEDULED DATE'].min()
+            if min_date > least_date:
+                break
+
             scheduleData = pd.concat([scheduleData, tempData], ignore_index=True)
 
             tempData['SCHEDULED DATE'] = pd.to_datetime(tempData['SCHEDULED DATE'])
@@ -52,18 +56,23 @@ class HearingScraperPipeline:
 
         # get result 
         urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
+        urlDict2 = self.data_scrapper.get_weekly_urls_for_hearing_results()
+        for d in urlDict2:
+            urlDict[d] = urlDict2[d]
         resultData = pd.DataFrame()
         for url in urlDict:
-            print(urlDict[url])
             tempData = self.data_scrapper.getData(urlDict[url])
-            resultData = pd.concat([resultData, tempData], ignore_index=True)
 
-            tempData['SCHEDULED DATE'] = pd.to_datetime(tempData['SCHEDULED DATE'])
-            min_date = tempData['SCHEDULED DATE'].min()
+            tempData2 = tempData
+            tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
+            min_date = tempData2['SCHEDULED DATE'].min()
+            if min_date > least_date:
+                break
+
+            resultData = pd.concat([resultData, tempData], ignore_index=True)
 
         resultDataColumns = self.data_scrapper.get_result_columns()
         resultData = resultData[resultDataColumns]
-
 
 
         #  merge result
@@ -75,6 +84,7 @@ class HearingScraperPipeline:
 
         merged_data = pd.merge(scheduleData, resultData, on=merge_columns, how='outer')
         print(merged_data.columns)
+        print(merged_data)
         self.data = merged_data
         return self.data
 
