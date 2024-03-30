@@ -2,13 +2,16 @@ import os
 import pandas as pd
 from hearing_scraper import HearingScraperPipeline
 from case_scraper import CaseScraper
+from sheet_exporter import GoogleSheetsCSVConverter
 
 
 class ScrapeFlow(object):
 
     def __init__(self, parallel=1):
         google_credentials = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        google_sheet_name = os.getenv('GOOGLE_SHEET_NAME')
 
+        self.sheet_exporter = GoogleSheetsCSVConverter(google_credentials, google_sheet_name)
         self.pipeline = HearingScraperPipeline()
         self.case_scraper = CaseScraper()
         self.results: pd.DataFrame = None
@@ -24,7 +27,7 @@ class ScrapeFlow(object):
     def __call__(self, *args, **kwargs):
         self.results = self.pipeline.get_latest_data()
         self.populate_cases()
-
+        self.publish_speardsheet()
 
     def populate_cases(self):
         """
