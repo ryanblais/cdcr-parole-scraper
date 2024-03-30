@@ -7,7 +7,7 @@ Author: Nikola Huang
 """
 from typing import List
 from pandas import DataFrame
-from datetime import date
+from datetime import date, datetime
 
 from bs4 import BeautifulSoup
 
@@ -49,12 +49,20 @@ def getHearingActions(soup: BeautifulSoup, lastName: str, firstName: str, CDCR: 
     """
     listOfList = []
     for tr in soup.find('table').find_all('tr'):
-        allCells = tr.find_all('td')
-        if not allCells or not allCells[0]:
+        cellsInRow = tr.find_all('td')
+        if not cellsInRow or not cellsInRow[0]:
             continue
         row = [lastName, firstName, CDCR]
-        for cell in allCells:
-            row.append(cell.text.strip())
+        for i, cell in enumerate(cellsInRow):
+            txt = cell.text
+            # Date.
+            if i == 0:
+                # No month info. datetime automatically fill 01 as date.
+                if ',' not in txt:
+                    txt = datetime.strptime(txt, "%B %Y").strftime("%m/%d/%y")
+                else:
+                    txt = datetime.strptime(txt, "%B %d, %Y").strftime("%m/%d/%y")
+            row.append(txt.strip())
         listOfList.append(row)
 
     hearingTable = DataFrame(listOfList)
