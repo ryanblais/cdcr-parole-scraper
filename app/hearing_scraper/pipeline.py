@@ -33,7 +33,7 @@ class HearingScraperPipeline:
 
 
         # get schedule
-        urlDict = self.data_scrapper.get_monthly_urls_for_hearing_schedules()
+        urlDict = self.data_scrapper.get_current_and_next_month_url_for_hearing_schedules()
         scheduleData = pd.DataFrame()
 
         for url in urlDict:
