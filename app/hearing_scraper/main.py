@@ -8,6 +8,8 @@ from urllib.error import HTTPError, URLError
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 property_file_path = "scrapper.yaml"
 month_h3_id_property_key = "h3_id_month"
@@ -114,6 +116,16 @@ class SR_SCRAPER:
             innerString=self.get_property_value(URLType.HEARING_SCHEDULE,
                                                 month_h3_string_property_key))
 
+    def get_current_and_next_month_url_for_hearing_schedules(self):
+        monthly_url = self.get_monthly_urls_for_hearing_schedules()
+        interested_months = [self.get_month_as_string(), self.get_month_as_string(1)]
+        filtered_urls = {key: value for key, value in monthly_url.items() if key in interested_months}
+        if filtered_urls is not None:
+            return filtered_urls
+        else:
+            print("Current and next months unavailable in URL map, returning empty")
+            return {}
+
     def get_monthly_urls_for_hearing_results(self):
         base_url = self.get_hearing_results_base_url()
         page_contents = self.process_url(base_url)
@@ -127,3 +139,11 @@ class SR_SCRAPER:
         return page_contents.get_schedule_links_following_header_string(
             id=self.get_property_value(URLType.HEARING_RESULTS,
                                        week_h3_id_property_key))
+
+    def get_month_as_string(self, advance=0):
+        current_date = datetime.now()
+        # Calculate the next month
+        next_month = current_date + relativedelta(months=advance)
+        # Format the month as "Month Year"
+        next_month_formatted = next_month.strftime("%B %Y")
+        return next_month_formatted
