@@ -61,14 +61,15 @@ class HearingScraperPipeline:
             tempData2 = tempData
             tempData2['SCHEDULED DATE'] = pd.to_datetime(tempData2['SCHEDULED DATE'])
             max_date = tempData2['SCHEDULED DATE'].max()
-            if max_date > least_date:
-                break
+            if max_date < least_date:
+                continue
 
             resultData = pd.concat([resultData, tempData], ignore_index=True)
             resultDataColumns = self.data_scrapper.get_result_columns()
             resultData = resultData[resultDataColumns]
 
-
+        print(resultData)
+        print(resultData.shape)
         #  merge result
         merge_columns = ['CDC#', 'SCHEDULED DATE']
         for col in scheduleData.columns:
