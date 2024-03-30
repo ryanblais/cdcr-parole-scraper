@@ -5,38 +5,38 @@ from urllib.request import urlopen
 from ssl import SSLError, CertificateError
 from urllib.error import HTTPError, URLError
 
-yaml_file_path = "scrapper.yaml"
+property_file_path = "scrapper.yaml"
+h3_id_property_key = "h3_id"
+h3_string_property_key = "h3_string"
 
 
 class URLType(Enum):
-    HEARING_SCHEDULE = "hearing_schedule"
-    HEARING_RESULTS = "hearing_results"
+    HEARING_SCHEDULE = "hearing-schedules"
+    HEARING_RESULTS = "hearing-results"
 
 
-def get_base_url(urlType: URLType):
-    # Return a dictionary of URLs to parse in the next step
+def get_property_value(type: URLType, key: str):
+    # Read the config file and return the value for key
     try:
-        with open(yaml_file_path, "r") as file:
+        with open(property_file_path, "r") as file:
             config = yaml.safe_load(file)
     except Exception as e:
         print("Error while reading config file: " + str(e))
         raise e
     try:
-        if urlType == URLType.HEARING_SCHEDULE:
-            return config["hearing-schedules"]["url"]
-        elif urlType == URLType.HEARING_RESULTS:
-            return config["hearing-results"]["url"]
+        return config[type.value][key]
     except Exception as e:
-        print("Error fetching base url: " + str(e))
+        print(config)
+        print("Error fetching key value: " + str(e))
         raise e
 
 
 def get_hearing_schedule_base_url():
-    return get_base_url(URLType.HEARING_SCHEDULE)
+    return get_property_value(URLType.HEARING_SCHEDULE, "url")
 
 
 def get_hearing_results_base_url():
-    return get_base_url(URLType.HEARING_RESULTS)
+    return get_property_value(URLType.HEARING_RESULTS, "url")
 
 
 def process_url(url):
@@ -57,11 +57,13 @@ def process_url(url):
 def get_monthly_urls_for_hearing_schedules():
     base_url = get_hearing_schedule_base_url()
     page_contents = process_url(base_url)
-    return page_contents.get_schedule_links_following_header_string(id="select-a-schedule", innerString="Select a schedule:")
+    return page_contents.get_schedule_links_following_header_string(
+        id=get_property_value(URLType.HEARING_SCHEDULE, h3_id_property_key),
+        innerString=get_property_value(URLType.HEARING_SCHEDULE, h3_string_property_key))
 
 
 def get_monthly_urls_for_hearing_results():
     base_url = get_hearing_results_base_url()
     page_contents = process_url(base_url)
-    return page_contents.get_schedule_links_following_header_string(innerString="Hearing Results by Month:")
-
+    return page_contents.get_schedule_links_following_header_string(
+        innerString=get_property_value(URLType.HEARING_RESULTS, h3_string_property_key))
