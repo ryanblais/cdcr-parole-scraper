@@ -1,18 +1,22 @@
 # Main pipeline class to chain actions
 
 import pandas as pd
-
+from main import SR_SCRAPER
 
 class HearingScraperPipeline:
     data = None
+    data_scrapper = None
+    
 
     def __init__(self):
-        self.data = DummyData().get()
+        self.data = pd.DataFrame()
+        self.data_scrapper = SR_SCRAPER()
 
     def get_latest_data(self) -> pd.DataFrame:
         """
         Do the following:
         1. Fetch the latest copy of the master Google sheet
+
         2. Scrape the hearing schedule page and get the URLs
         3. Scrape each URL, sync against the master sheet & add rows if available
         4. Scrape the hearing results page and get the URLs
@@ -20,6 +24,16 @@ class HearingScraperPipeline:
         6. Return the final dataset (as a Pandas#DataFrame)
         :return: pd.DataFrame
         """
+        # 2
+        urlDict = self.data_scrapper.get_monthly_urls_for_hearing_schedules()
+        print(urlDict)
+        for url in urlDict:
+            tempData = self.data_scrapper.getData(urlDict[url])
+            self.data = self.data.append(tempData, ignore_index=True)
+            print(self.data.shape)
+        
+        urlDict = self.data_scrapper.get_monthly_urls_for_hearing_results()
+
         return self.data
 
 
@@ -48,3 +62,11 @@ class DummyData:
 
     def get(self):
         return self.df
+
+
+
+
+HearingScraperPipeline().get_latest_data()
+
+
+
