@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from hearing_scraper import HearingScraperPipeline
+from .hearing_scraper import HearingScraperPipeline
 from case_scraper import CaseScraper
 from sheet_exporter import GoogleSheetsCSVConverter
 

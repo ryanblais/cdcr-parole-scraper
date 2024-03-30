@@ -1,0 +1,13 @@
+{
+        "hearing-schedules": {
+                "url": "https://www.cdcr.ca.gov/bph/hearing-schedule/",
+                "h3_id": "select-a-schedule",
+                "h3_string": "Select a schedule:",
+                "columns": ['CDC#','HEARING TYPE', 'PANEL', 'HEARING LOCATION', 'HEARING METHOD', 'SCHEDULED DATE', 'HEARING TIME']
+        },
+        "hearing-results": {
+                "url": "https://www.cdcr.ca.gov/bph/parole-suitability-hearing-results/",
+                "h3_string": "Hearing Results by Month:",
+                "columns": ['CDC#', 'SCHEDULED DATE', 'HEARING TIME', 'OFFENDER NAME', 'HEARING METHOD', 'COUNTY OF COMMITMENT', 'GOV CODE', 'HEARING TYPE', 'RESULT']
+        }
+}

@@ -1,5 +1,5 @@
 import yaml
-from html_parser import *
+from .html_parser import *
 from enum import Enum
 from urllib.request import urlopen
 from ssl import SSLError, CertificateError

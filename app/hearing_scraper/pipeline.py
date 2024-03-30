@@ -1,7 +1,7 @@
 # Main pipeline class to chain actions
 
 import pandas as pd
-from main import SR_SCRAPER
+from .main import SR_SCRAPER
 
 class HearingScraperPipeline:
     data = None
