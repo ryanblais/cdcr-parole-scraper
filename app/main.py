@@ -1,5 +1,6 @@
 from hearing_scraper.pipeline import HearingScraperPipeline
 
+
 ## This is entry point of the application
 
 
