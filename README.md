@@ -39,3 +39,7 @@ This is a Python project that uses a virtual environment (venv) for dependency m
 ## Running the Application
 
 After setting up the project and activating the virtual environment, you can run the application with the following command:
+
+```
+python3 -m app.main
+```
