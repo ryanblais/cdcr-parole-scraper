@@ -37,7 +37,7 @@ class CaseScraper(object):
         self.browser = None
         self.playwright.__exit__(exc_type, exc_val, exc_tb)
 
-    def get_case_details(self, case_id) -> dict:
+    def get_case_details(self, case_id) -> typing.Tuple[dict, pd.DataFrame]:
         if not self.browser:
             with self as scr, scr.browser.new_page() as page:
                 return self._get_case_details(case_id, page)
@@ -45,7 +45,8 @@ class CaseScraper(object):
             with self.browser.new_page() as page:
                 return self._get_case_details(case_id, page)
 
-    def _get_case_details(self, case_id, page: Page) -> dict:
+    def _get_case_details(self, case_id, page: Page) -> typing.Tuple[dict, pd.DataFrame]:
+        print(f"Getting case details for {case_id}")
         page.goto(f"https://apps.cdcr.ca.gov/ciris/")
         states = set()
         while PageState.CASE_PAGE not in states:
@@ -72,7 +73,8 @@ class CaseScraper(object):
                 continue
 
         html = page.content()
-        return self._parse_page(html)
+        result = self._parse_page(html)
+        return result
 
     def _parse_page(self, html: str) -> typing.Tuple[dict, pd.DataFrame]:
         return parseHearingInfo(html)
@@ -101,7 +103,7 @@ class PageState(IntEnum):
 
 
 if __name__ == '__main__':
-    with Scraper() as scraper:
+    with CaseScraper() as scraper:
         result, df = scraper.get_case_details("G64805")
         Path('output.json').write_text(json.dumps(result, indent=2))
         df.to_csv('output.csv', index=False)
